@@ -1,0 +1,86 @@
+CREATE DATABASE UniversityDB;
+USE UniversityDB;
+CREATE TABLE Student (
+    StudentID INT PRIMARY KEY AUTO_INCREMENT,
+    FirstName VARCHAR(50),
+    LastName VARCHAR(50),
+    Email VARCHAR(100) UNIQUE,
+    Phone VARCHAR(15),
+    DOB DATE,
+    Gender ENUM('Male', 'Female', 'Other'),
+    Address TEXT
+);
+CREATE TABLE Faculty (
+    FacultyID INT PRIMARY KEY AUTO_INCREMENT,
+    FirstName VARCHAR(50),
+    LastName VARCHAR(50),
+    Email VARCHAR(100) UNIQUE,
+    Phone VARCHAR(15),
+    Department VARCHAR(100)
+);
+CREATE TABLE Course (
+    CourseID INT PRIMARY KEY AUTO_INCREMENT,
+    CourseName VARCHAR(100),
+    Credits INT,
+    FacultyID INT,
+    FOREIGN KEY (FacultyID) REFERENCES Faculty(FacultyID)
+);
+CREATE TABLE Enrollment (
+    EnrollmentID INT PRIMARY KEY AUTO_INCREMENT,
+    StudentID INT,
+    CourseID INT,
+    EnrollmentDate DATE,
+    FOREIGN KEY (StudentID) REFERENCES Student(StudentID),
+    FOREIGN KEY (CourseID) REFERENCES Course(CourseID)
+);
+CREATE TABLE Grades (
+    GradeID INT PRIMARY KEY AUTO_INCREMENT,
+    EnrollmentID INT,
+    Grade VARCHAR(2),
+    FOREIGN KEY (EnrollmentID) REFERENCES Enrollment(EnrollmentID)
+);
+INSERT INTO Student (FirstName, LastName, Email, Phone, DOB, Gender, Address)
+VALUES 
+('Anjali', 'Kumar', 'anjali.kumar@example.com', '9876543210', '2002-04-10', 'Female', 'Delhi'),
+('Ravi', 'Verma', 'ravi.verma@example.com', '9876543211', '2001-09-20', 'Male', 'Mumbai'),
+('Sneha', 'Sharma', 'sneha.sharma@example.com', '9876543212', '2003-01-15', 'Female', 'Pune');
+INSERT INTO Faculty (FirstName, LastName, Email, Phone, Department)
+VALUES 
+('Dr. Raj', 'Mishra', 'raj.mishra@univ.edu', '9123456789', 'Computer Science'),
+('Dr. Neha', 'Saxena', 'neha.saxena@univ.edu', '9123456790', 'Mathematics');
+INSERT INTO Course (CourseName, Credits, FacultyID)
+VALUES 
+('Data Structures', 4, 1),
+('Discrete Mathematics', 3, 2),
+('Algorithms', 4, 1);
+INSERT INTO Enrollment (StudentID, CourseID, EnrollmentDate)
+VALUES 
+(1, 1, '2025-01-10'),
+(1, 2, '2025-01-10'),
+(2, 1, '2025-01-12'),
+(3, 3, '2025-01-15');
+INSERT INTO Grades (EnrollmentID, Grade)
+VALUES 
+(1, 'A'),
+(2, 'B'),
+(3, 'A'),
+(4, 'A+');
+SELECT * FROM Student;
+SELECT 
+    S.FirstName, S.LastName, C.CourseName, E.EnrollmentDate
+FROM 
+    Enrollment E
+JOIN Student S ON E.StudentID = S.StudentID
+JOIN Course C ON E.CourseID = C.CourseID;
+SELECT 
+    S.FirstName, S.LastName, C.CourseName, G.Grade
+FROM 
+    Grades G
+JOIN Enrollment E ON G.EnrollmentID = E.EnrollmentID
+JOIN Student S ON E.StudentID = S.StudentID
+JOIN Course C ON E.CourseID = C.CourseID;
+SELECT 
+    C.CourseName, C.Credits, F.FirstName AS FacultyFirstName, F.LastName AS FacultyLastName
+FROM 
+    Course C
+JOIN Faculty F ON C.FacultyID = F.FacultyID;
